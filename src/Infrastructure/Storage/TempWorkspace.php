@@ -49,7 +49,7 @@ final class TempWorkspace {
      * в docker-compose, поэтому по умолчанию живём внутри него.
      */
     public static function basePath(): string {
-        $path = getEnv('SYS_TMP_PATH') ?: PATH_ROOT . '/storage/tmp';
+        $path = getEnv('SYS_TMP_PATH') ?: PATH_DATA . '/storage/tmp';
         return rtrim(str_replace('\\', '/', $path), '/');
     }
 

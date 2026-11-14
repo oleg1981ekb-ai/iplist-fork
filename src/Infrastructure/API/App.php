@@ -34,11 +34,36 @@ final class App {
     private function __construct(private ?Logger $logger = null) {
         ini_set('memory_limit', getEnv('SYS_MEMORY_LIMIT') ?? '1024M');
 
+        // Remember whether PATH_ROOT was pinned externally (e.g. by the test
+        // bootstrap, which points it at a fixtures tree) before we define it.
+        $rootWasDefined = defined('PATH_ROOT');
         if (!defined('PATH_ROOT')) {
             define('PATH_ROOT', dirname(__DIR__, 3));
         }
 
-        $dotenv = Dotenv::createImmutable(PATH_ROOT);
+        // PATH_DATA is the writable runtime root: .env, config/, storage/ all
+        // live here. It is the current working directory (the directory of the
+        // executable / the .phar stub), NOT the source tree — so a compiled
+        // standalone binary can read configs and write its cache next to
+        // itself instead of inside a read-only .phar archive.
+        //
+        // When PATH_ROOT was pinned externally (tests), reuse it so the
+        // fixtures tree stays the data root; otherwise use getcwd().
+        if (!defined('PATH_DATA')) {
+            define('PATH_DATA', $rootWasDefined ? PATH_ROOT : (getcwd() ?: PATH_ROOT));
+        }
+
+        // Ensure the writable runtime directories exist next to the executable
+        // so cache writes (cidr.json, icons.json, tmp/) succeed on a fresh
+        // deployment that ships only the binary + config/.
+        foreach (['storage', 'storage/icons', 'storage/tmp'] as $runtimeDir) {
+            $dirPath = PATH_DATA . '/' . $runtimeDir;
+            if (!is_dir($dirPath)) {
+                @mkdir($dirPath, 0755, true);
+            }
+        }
+
+        $dotenv = Dotenv::createImmutable(PATH_DATA);
         $dotenv->safeLoad();
 
         if ($timezone = getEnv('SYS_TIMEZONE')) {

@@ -98,7 +98,7 @@ class FaviconController extends AbstractIPListController {
     private function saveIcon(string $site, string $filename, ?string $content = null): void {
         $this->storage->set($site, $filename);
         if ($content) {
-            file_put_contents(PATH_ROOT . '/storage/icons/' . $filename, $content);
+            file_put_contents(PATH_DATA . '/storage/icons/' . $filename, $content);
         }
         $this->storage->save();
     }
@@ -108,7 +108,7 @@ class FaviconController extends AbstractIPListController {
      * @return string
      */
     private function output(string $filename): string {
-        $path = PATH_ROOT . '/storage/icons/' . $filename;
+        $path = PATH_DATA . '/storage/icons/' . $filename;
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $contentType = finfo_file($finfo, $path);
         finfo_close($finfo);

@@ -5,7 +5,7 @@ use OpenCCK\Infrastructure\API\Server;
 
 use Amp\ByteStream\BufferException;
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 App::getInstance()
     ->addModule(

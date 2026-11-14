@@ -24,10 +24,10 @@ class IPListService {
     /**
      * @throws Exception
      */
-    private function __construct(Logger $logger = null) {
+    private function __construct(?Logger $logger = null) {
         $this->logger = $logger ?? App::getLogger();
 
-        $dir = PATH_ROOT . '/config/';
+        $dir = PATH_DATA . '/config/';
         if (!is_dir($dir)) {
             throw new Exception('config directory not found');
         }
@@ -64,7 +64,7 @@ class IPListService {
      * @return IPListService
      * @throws Exception
      */
-    public static function getInstance(Logger $logger = null): IPListService {
+    public static function getInstance(?Logger $logger = null): IPListService {
         return self::$_instance ??= new self($logger);
     }
 

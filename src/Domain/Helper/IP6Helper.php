@@ -47,7 +47,7 @@ class IP6Helper {
                 if (!$search) {
                     $search = shell_exec(
                         implode(' | ', [
-                            'whois -a ' . $ip,
+                            'whois ' . $ip,
                             'grep inet6num',
                             'grep -v "/0"',
                             'head -n 1',
@@ -59,7 +59,7 @@ class IP6Helper {
                 if (!$search) {
                     $search = shell_exec(
                         implode(' | ', [
-                            'whois -a ' . $ip,
+                            'whois ' . $ip,
                             'grep route6',
                             'grep -v "/0"',
                             'head -n 1',

@@ -12,7 +12,7 @@ class CIDRStorage implements StorageInterface {
     private array $data = [];
 
     private function __construct() {
-        $path = PATH_ROOT . '/storage/' . self::FILENAME;
+        $path = PATH_DATA . '/storage/' . self::FILENAME;
         if (is_file($path)) {
             $this->data = (array) json_decode(file_get_contents($path)) ?? [];
         }
@@ -38,7 +38,7 @@ class CIDRStorage implements StorageInterface {
     }
 
     private function save(): void {
-        file_put_contents(PATH_ROOT . '/storage/' . self::FILENAME, json_encode($this->data, JSON_PRETTY_PRINT));
+        file_put_contents(PATH_DATA . '/storage/' . self::FILENAME, json_encode($this->data, JSON_PRETTY_PRINT));
         App::getLogger()->notice('Whois storage saved', [count($this->data) . ' items']);
     }
 }

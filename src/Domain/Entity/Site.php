@@ -242,7 +242,7 @@ final class Site {
      */
     private function saveConfig(): void {
         file_put_contents(
-            PATH_ROOT . '/config/' . $this->group . '/' . $this->name . '.json',
+            PATH_DATA . '/config/' . $this->group . '/' . $this->name . '.json',
             json_encode($this->getConfig(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
         );
     }
