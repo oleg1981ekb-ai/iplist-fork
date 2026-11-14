@@ -1,0 +1,11 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src",
+        "vendor",
+        "public"
+    ],
+    "main": "index.php",
+    "output": "build/iplist.phar",
+    "stub": true
+}

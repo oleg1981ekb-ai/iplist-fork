@@ -131,3 +131,5 @@ dist
 
 # Robots Files
 robots.txt
+build/
+.box/
