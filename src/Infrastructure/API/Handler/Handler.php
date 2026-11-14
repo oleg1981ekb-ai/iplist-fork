@@ -17,7 +17,7 @@ abstract class Handler implements HandlerInterface {
      * @return AbstractController
      * @throws Exception
      */
-    protected function getController(string $name, Request $request, array $headers = null): AbstractController {
+    protected function getController(string $name, Request $request, ?array $headers = null): AbstractController {
         $className = '\\OpenCCK\\App\\Controller\\' . ucfirst($name) . 'Controller';
         if (!class_exists($className)) {
             throw new Exception('Controller ' . $className . ' not found', HttpStatus::NOT_FOUND);

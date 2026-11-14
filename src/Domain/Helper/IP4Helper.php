@@ -41,31 +41,21 @@ class IP4Helper {
                 }
 
                 if (!$search) {
-                    $search = shell_exec(
-                        implode(' | ', [
-                            'whois -a ' . $ip,
-                            'grep inetnum',
-                            'head -n 1',
-                            "awk '{print $2\"-\"$4}'",
-                            'sed "s/-$//"',
-                            'xargs ipcalc',
-                            "grep -oE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$'",
-                        ])
-                    );
+                    $result = shell_exec('whois ' . escapeshellarg($ip));
+                    if ($result) {
+                        if (preg_match('/^inetnum:\s*(\S+)\s*-\s*(\S+)/i', $result, $matches)) {
+                            $search = self::ipRangeToCidrs($matches[1] . '-' . $matches[2]);
+                        }
+                    }
                 }
 
                 if (!$search) {
-                    $search = shell_exec(
-                        implode(' | ', [
-                            'whois -a ' . $ip,
-                            'grep IPv4',
-                            'grep " - "',
-                            'head -n 1',
-                            "awk '{print $3\"-\"$5}'",
-                            'xargs ipcalc',
-                            "grep -oE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$'",
-                        ])
-                    );
+                    $result = shell_exec('whois ' . escapeshellarg($ip));
+                    if ($result) {
+                        if (preg_match('/^IPv4:\s*(\S+)\s*-\s*(\S+)/i', $result, $matches)) {
+                            $search = self::ipRangeToCidrs($matches[1] . '-' . $matches[2]);
+                        }
+                    }
                 }
 
                 if ($search) {
@@ -90,6 +80,50 @@ class IP4Helper {
         }
 
         return self::minimizeSubnets($results);
+    }
+
+    /**
+     * Convert an IPv4 range "start-end" into the minimal set of CIDR blocks
+     * that exactly covers the range. Pure-PHP replacement for the former
+     * external `xargs ipcalc | grep ...` pipeline, so the binary
+     * no longer depends on the external ipcalc utility (Linux-only).
+     *
+     * Mirrors `ipcalc <start>-<end>` "deaggregate" output: one `IP/prefix`
+     * per line. A single address (no dash) yields an empty string, matching
+     * the old ipcalc-grep behaviour where a bare address produced no match.
+     */
+    public static function ipRangeToCidrs(string $range): string {
+        if (!str_contains($range, '-')) {
+            return '';
+        }
+
+        [$startIp, $endIp] = explode('-', $range, 2);
+        if ($endIp === '' || ($start = ip2long($startIp)) === false || ($end = ip2long($endIp)) === false) {
+            return '';
+        }
+
+        if ($start > $end) {
+            return '';
+        }
+
+        $result = [];
+        while ($start <= $end) {
+            // Find largest aligned block (smallest mask) starting at $start that fits within range.
+            $mask = null;
+            for ($m = 0; $m <= 32; $m++) {
+                $blockSize = 1 << (32 - $m);
+                if ($start % $blockSize === 0 && $start + $blockSize - 1 <= $end) {
+                    $mask = $m;
+                    break;
+                }
+            }
+            if ($mask === null) {
+                $mask = 32;
+            }
+            $result[] = long2ip($start) . '/' . $mask;
+            $start += 1 << (32 - $mask);
+        }
+        return implode("\n", $result);
     }
 
     public static function trimCIDRs(array $searchArray): array {

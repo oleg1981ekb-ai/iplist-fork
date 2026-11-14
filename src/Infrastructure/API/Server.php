@@ -77,10 +77,10 @@ final class Server implements AppModuleInterface {
      * @throws Throwable
      */
     public static function getInstance(
-        HttpServer $httpServer = null,
-        ErrorHandler $errorHandler = null,
-        Socket\BindContext $bindContext = null,
-        Logger $logger = null
+        ?HttpServer $httpServer = null,
+        ?ErrorHandler $errorHandler = null,
+        ?Socket\BindContext $bindContext = null,
+        ?Logger $logger = null
     ): Server {
         return self::$_instance ??= new self($httpServer, $errorHandler, $bindContext, $logger);
     }

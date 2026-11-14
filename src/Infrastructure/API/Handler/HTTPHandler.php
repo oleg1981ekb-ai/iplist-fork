@@ -14,10 +14,10 @@ use function OpenCCK\dbg;
 use function OpenCCK\getEnv;
 
 final class HTTPHandler extends Handler implements HTTPHandlerInterface {
-    private function __construct(private readonly LoggerInterface $logger, array $headers = null) {
+    private function __construct(private readonly LoggerInterface $logger, ?array $headers = null) {
     }
 
-    public static function getInstance(LoggerInterface $logger, array $headers = null): HTTPHandler {
+    public static function getInstance(LoggerInterface $logger, ?array $headers = null): HTTPHandler {
         return new self($logger, $headers);
     }
 
