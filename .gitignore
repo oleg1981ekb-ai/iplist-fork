@@ -133,3 +133,10 @@ dist
 robots.txt
 build/
 .box/
+
+# static-php-cli (spc) build tooling
+.spc.cache.php
+/buildroot/
+/downloads/
+/source/
+/spc
