@@ -140,3 +140,6 @@ build/
 /downloads/
 /source/
 /spc
+
+# Generated AWG config output
+configs/
