@@ -11,6 +11,9 @@ use Revolt\EventLoop\UnsupportedFeatureException;
 
 use Closure;
 use Dotenv\Dotenv;
+use FilesystemIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -60,6 +63,36 @@ final class App {
             $dirPath = PATH_DATA . '/' . $runtimeDir;
             if (!is_dir($dirPath)) {
                 @mkdir($dirPath, 0755, true);
+            }
+        }
+
+        // Auto-initialize .env from the bundled .env.example if missing.
+        if (!file_exists(PATH_DATA . '/.env') && file_exists(PATH_ROOT . '/.env.example')) {
+            $envContent = @file_get_contents(PATH_ROOT . '/.env.example');
+            if ($envContent !== false) {
+                @file_put_contents(PATH_DATA . '/.env', $envContent);
+            }
+        }
+
+        // Auto-initialize config/ from the bundled config/ if missing.
+        if (!is_dir(PATH_DATA . '/config') && is_dir(PATH_ROOT . '/config')) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(PATH_ROOT . '/config', FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+            foreach ($iterator as $item) {
+                $src = $item->getPathname();
+                $rel = substr($src, strlen(PATH_ROOT . '/config'));
+                $dst = PATH_DATA . '/config' . $rel;
+                if ($item->isDir()) {
+                    @mkdir($dst, 0755, true);
+                } elseif ($item->isFile()) {
+                    $dstDir = dirname($dst);
+                    if (!is_dir($dstDir)) {
+                        @mkdir($dstDir, 0755, true);
+                    }
+                    @copy($src, $dst);
+                }
             }
         }
 

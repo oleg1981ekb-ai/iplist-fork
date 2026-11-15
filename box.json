@@ -3,7 +3,11 @@
     "directories": [
         "src",
         "vendor",
-        "public"
+        "public",
+        "config"
+    ],
+    "files": [
+        ".env.example"
     ],
     "main": "index.php",
     "output": "build/iplist.phar",
