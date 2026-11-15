@@ -53,6 +53,32 @@ For english readme: [README.en.md](README.en.md)
 | amnezia  | Amnezia filter list           |
 | pac      | Proxy Auto-Configuration file |
 
+## Установка на macOS
+
+Эта инструкция поможет установить iplist на macOS в автономном режиме.
+
+**Быстрая установка (одной командой):**
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/oleg1981ekb-ai/iplist-fork/release/v1.0.0-macos/install.sh)"
+```
+*(или см. раздел «Ручной запуск» ниже)*
+
+**Системные требования:**
+- macOS 10.15+ (Intel x86_64) или Apple Silicon (ARM64) с поддержкой Rosetta 2 при использовании x86_64-образа.
+- Статический PHP-бинарник и PHAR-пакет упакованы для архитектуры x86_64; на процессорах Apple Silicon работает через Rosetta 2.
+
+**Что происходит при первом запуске:**
+1. Скрипт создаст папку `~/.local/share/iplist/runtime/` со статическим PHP и `iplist.phar`.
+2. Создаст обёртку `~/.local/bin/iplist`, которая добавляет `~/.local/share/iplist/data/` в рабочую директорию при необходимости.
+3. Приложение само инициализирует файл `.env` и папку `config/` из bundled-эталонов, а также `storage/` (ikons, tmp, cidr.json).
+4. HTTP-сервер начнёт прослушивание `http://127.0.0.1:8080/`.
+
+**Как удалить:**
+```bash
+rm -rf ~/.local/share/iplist ~/.local/bin/iplist
+```
+Затем удалите строку с `export PATH="${HOME}/.local/bin:$PATH"` из `~/.zshrc` (или `~/.bashrc`), если она была добавлена.
+
 ## Настройки
 
 Конфигурационные файлы хранятся в `config/<группа>/<портал>.json`. Каждый JSON файл представляет собой конфигурацию для конкретного портала, задавая домены для мониторинга и источники начальных данных по IP и CIDR.

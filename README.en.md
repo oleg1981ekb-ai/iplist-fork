@@ -185,6 +185,32 @@ http://0.0.0.0:8080/?format=comma&data=cidr4
 | version         | rule-set format version `1`…`5` (default `1`) — for `singbox`, `srs`                                              | ?version=3                                                                                                     |
 | template        | Custom output format                                                                                              | ?format=custom&template=[more](https://github.com/rekryt/iplist/blob/master/README.en.md#custom-output-format) |
 
+## macOS Installation
+
+This guide shows how to install iplist on macOS as a standalone binary.
+
+**Quick installation (one command):**
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/oleg1981ekb-ai/iplist-fork/release/v1.0.0-macos/install.sh)"
+```
+*(or see the "Manual Launch" section below)*
+
+**System requirements:**
+- macOS 10.15+ (Intel x86_64) or Apple Silicon (ARM64) with Rosetta 2 support when using the x86_64 image.
+- The static PHP binary and PHAR package are built for x86_64; on Apple Silicon they run via Rosetta 2.
+
+**What happens on first run:**
+1. The script creates `~/.local/share/iplist/runtime/` with the static PHP binary and `iplist.phar`.
+2. It creates the wrapper `~/.local/bin/iplist`, which switches to `~/.local/share/iplist/data/` as the working directory if needed.
+3. The app auto‑initializes `.env` and `config/` from the bundled examples, plus `storage/` (icons, tmp, cidr.json).
+4. The HTTP server starts listening on `http://127.0.0.1:8080/`.
+
+**How to uninstall:**
+```bash
+rm -rf ~/.local/share/iplist ~/.local/bin/iplist
+```
+Then remove the line `export PATH="${HOME}/.local/bin:$PATH"` from `~/.zshrc` (or `~/.bashrc`) if it was added.
+
 ## SSL Setup
 
 -   Install and configure a reverse proxy, for example, [NginxProxyManager](https://nginxproxymanager.com/guide/#quick-setup).
